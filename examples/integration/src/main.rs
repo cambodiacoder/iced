@@ -4,12 +4,16 @@ mod scene;
 use controls::Controls;
 use scene::Scene;
 
+use futures::task::SpawnExt;
 use iced_wgpu::{wgpu, Backend, Renderer, Settings, Viewport};
 use iced_winit::{conversion, futures, program, winit, Debug, Size};
-
-use futures::task::SpawnExt;
+use winit::dpi::PhysicalSize;
+use winit::monitor::MonitorHandle;
+use winit::platform::unix::XWindowStrut;
+use winit::platform::unix::{WindowBuilderExtUnix, WindowExtUnix, XWindowType};
+use winit::window::Fullscreen;
 use winit::{
-    dpi::PhysicalPosition,
+    dpi::{LogicalPosition, LogicalSize, PhysicalPosition},
     event::{Event, ModifiersState, WindowEvent},
     event_loop::{ControlFlow, EventLoop},
 };
@@ -19,8 +23,20 @@ pub fn main() {
 
     // Initialize winit
     let event_loop = EventLoop::new();
-    let window = winit::window::Window::new(&event_loop).unwrap();
-
+    // let monitor_handle = MonitorHandle { inner:  };
+    let window = winit::window::WindowBuilder::new()
+        .with_inner_size(PhysicalSize::new(1920, 60))
+        // .with_fullscreen(Some(Fullscreen::Borderless(Some(monitor_handle))))
+        .with_decorations(false)
+        .with_x11_window_type(vec![XWindowType::Dock])
+        .with_x11_window_strut(vec![
+            XWindowStrut::Strut([0, 0, 60, 0]),
+            XWindowStrut::StrutPatial([0, 0, 60, 0, 0, 0, 0, 0, 0, 1920, 0, 0]),
+        ])
+        .build(&event_loop)
+        .unwrap();
+    println!("window id: {:?}", window.id());
+    window.set_outer_position(PhysicalPosition::new(0, 0));
     let physical_size = window.inner_size();
     let mut viewport = Viewport::with_physical_size(
         Size::new(physical_size.width, physical_size.height),
