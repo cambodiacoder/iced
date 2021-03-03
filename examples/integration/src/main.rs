@@ -1,21 +1,18 @@
-mod controls;
+mod panel;
 mod scene;
-
-use controls::Controls;
-use scene::Scene;
+mod styles;
+use panel::Controls;
+// use scene::Scene;
 
 use futures::task::SpawnExt;
 use iced_wgpu::{wgpu, Backend, Renderer, Settings, Viewport};
-use iced_winit::{conversion, futures, program, Debug, Size};
-use std::collections::HashMap;
+use iced_winit::{conversion, futures, program, winit, Debug, Size};
 use winit::dpi::PhysicalSize;
-use winit::monitor::MonitorHandle;
 use winit::platform::unix::XWindowStrut;
-use winit::platform::unix::{WindowBuilderExtUnix, WindowExtUnix, XWindowType};
-use winit::window::Fullscreen;
+use winit::platform::unix::{WindowBuilderExtUnix, XWindowType};
 use winit::{
-    dpi::{LogicalPosition, LogicalSize, PhysicalPosition},
-    event::{Event, ModifiersState, WindowEvent},
+    dpi::PhysicalPosition,
+    event::{ElementState, Event, KeyboardInput, ModifiersState, WindowEvent},
     event_loop::{ControlFlow, EventLoop},
 };
 
@@ -32,7 +29,7 @@ pub fn main() {
         .with_x11_window_type(vec![XWindowType::Dock])
         .with_x11_window_strut(vec![
             XWindowStrut::Strut([0, 0, 30, 0]),
-            XWindowStrut::StrutPatial([0, 0, 30, 0, 0, 0, 0, 0, 0, 1920, 0, 0]),
+            XWindowStrut::StrutPartial([0, 0, 30, 0, 0, 0, 0, 0, 0, 1920, 0, 0]),
         ])
         .build(&event_loop)
         .unwrap();
@@ -45,7 +42,7 @@ pub fn main() {
     let mut cursor_position = PhysicalPosition::new(-1.0, -1.0);
     let mut modifiers = ModifiersState::default();
 
-    // Initialize wgpu
+    // Initialize wgpucontrols
     let instance = wgpu::Instance::new(wgpu::BackendBit::PRIMARY);
     let surface = unsafe { instance.create_surface(&window) };
 
@@ -111,10 +108,9 @@ pub fn main() {
     );
 
     // Run event loop
-    event_loop.run(move |event, _, control_flow| {
+    event_loop.run(move |event, _loop_event, control_flow| {
         // You should change this if you want to render continuosly
         *control_flow = ControlFlow::Wait;
-
         match event {
             Event::WindowEvent { event, .. } => {
                 match event {
@@ -132,6 +128,14 @@ pub fn main() {
 
                         resized = true;
                     }
+                    WindowEvent::KeyboardInput {
+                        input:
+                            KeyboardInput {
+                                state: ElementState::Pressed,
+                                ..
+                            },
+                        ..
+                    } => {}
                     WindowEvent::CloseRequested => {
                         *control_flow = ControlFlow::Exit;
                     }
@@ -161,7 +165,6 @@ pub fn main() {
                         &mut renderer,
                         &mut debug,
                     );
-
                     // and request a redraw
                     window.request_redraw();
                 }

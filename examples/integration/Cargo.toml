@@ -8,4 +8,6 @@ publish = false
 [dependencies]
 iced_winit = { path = "../../winit" }
 iced_wgpu = { path = "../../wgpu" }
+iced_style = {path = "../../style"}
+iced = {path = "../.."}
 env_logger = "0.8"
