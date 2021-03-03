@@ -75,9 +75,9 @@ pub trait Application: Program {
     /// Returns the background [`Color`] of the [`Application`].
     ///
     /// By default, it returns [`Color::WHITE`].
-    fn background_color(&self) -> Color {
-        Color::WHITE
-    }
+        fn background_color(&self) -> Color {
+            Color::WHITE
+        }
 
     /// Returns the scale factor of the [`Application`].
     ///

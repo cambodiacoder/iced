@@ -1,24 +1,28 @@
 use iced_wgpu::Renderer;
 use iced_winit::{
-    slider, Align, Color, Column, Command, Element, Length, Program, Row,
-    Slider, Text,
+    button, slider, Align, Button, Color, Column, Command, Element, Length,
+    Program, Row, Slider, Text,
 };
 
+#[derive(Debug, Default)]
 pub struct Controls {
     background_color: Color,
     sliders: [slider::State; 3],
+    action_center: [button::State; 3],
 }
 
 #[derive(Debug, Clone)]
 pub enum Message {
     BackgroundColorChanged(Color),
+    ShowAction,
 }
 
 impl Controls {
     pub fn new() -> Controls {
         Controls {
-            background_color: Color::BLACK,
+            background_color: Color::WHITE,
             sliders: Default::default(),
+            action_center: Default::default(),
         }
     }
 
@@ -36,6 +40,9 @@ impl Program for Controls {
             Message::BackgroundColorChanged(color) => {
                 self.background_color = color;
             }
+            Message::ShowAction => {
+                println!("Application show");
+            }
         }
 
         Command::none()
@@ -43,62 +50,33 @@ impl Program for Controls {
 
     fn view(&mut self) -> Element<Message, Renderer> {
         let [r, g, b] = &mut self.sliders;
+        let [b1, b2, b3] = &mut self.action_center;
         let background_color = self.background_color;
-
-        let sliders = Row::new()
-            .width(Length::Units(500))
-            .spacing(20)
-            .push(
-                Slider::new(r, 0.0..=1.0, background_color.r, move |r| {
-                    Message::BackgroundColorChanged(Color {
-                        r,
-                        ..background_color
-                    })
-                })
-                .step(0.01),
-            )
-            .push(
-                Slider::new(g, 0.0..=1.0, background_color.g, move |g| {
-                    Message::BackgroundColorChanged(Color {
-                        g,
-                        ..background_color
-                    })
-                })
-                .step(0.01),
-            )
-            .push(
-                Slider::new(b, 0.0..=1.0, background_color.b, move |b| {
-                    Message::BackgroundColorChanged(Color {
-                        b,
-                        ..background_color
-                    })
-                })
-                .step(0.01),
-            );
 
         Row::new()
             .width(Length::Fill)
             .height(Length::Fill)
             .align_items(Align::End)
             .push(
-                Column::new()
-                    .width(Length::Fill)
-                    .align_items(Align::End)
-                    .push(
-                        Column::new()
-                            .padding(10)
-                            .spacing(10)
-                            .push(
-                                Text::new("Background color")
-                                    .color(Color::WHITE),
-                            )
-                            .push(sliders)
-                            .push(
-                                Text::new(format!("{:?}", background_color))
-                                    .size(14)
-                                    .color(Color::WHITE),
-                            ),
-                    ),
+                Button::new(b1, Text::new("KOOMPI"))
+                    .on_press(Message::ShowAction)
+                    .width(Length::Units(100))
+                    .height(Length::Fill),
+            )
+            .push(
+                Button::new(b2, Text::new("SMALLWORLD"))
+                    .on_press(Message::ShowAction)
+                    .width(Length::Units(100))
+                    .height(Length::Fill),
+            )
+            .push(
+                Button::new(
+                    b3,
+                    Text::new("SELENDRA").color(Color::from_rgb8(255, 0, 100)),
+                )
+                .on_press(Message::ShowAction)
+                .width(Length::Units(100))
+                .height(Length::Fill),
             )
             .into()
     }

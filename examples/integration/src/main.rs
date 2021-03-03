@@ -6,7 +6,8 @@ use scene::Scene;
 
 use futures::task::SpawnExt;
 use iced_wgpu::{wgpu, Backend, Renderer, Settings, Viewport};
-use iced_winit::{conversion, futures, program, winit, Debug, Size};
+use iced_winit::{conversion, futures, program, Debug, Size};
+use std::collections::HashMap;
 use winit::dpi::PhysicalSize;
 use winit::monitor::MonitorHandle;
 use winit::platform::unix::XWindowStrut;
@@ -25,17 +26,16 @@ pub fn main() {
     let event_loop = EventLoop::new();
     // let monitor_handle = MonitorHandle { inner:  };
     let window = winit::window::WindowBuilder::new()
-        .with_inner_size(PhysicalSize::new(1920, 60))
+        .with_inner_size(PhysicalSize::new(1920, 30))
         // .with_fullscreen(Some(Fullscreen::Borderless(Some(monitor_handle))))
         .with_decorations(false)
         .with_x11_window_type(vec![XWindowType::Dock])
         .with_x11_window_strut(vec![
-            XWindowStrut::Strut([0, 0, 60, 0]),
-            XWindowStrut::StrutPatial([0, 0, 60, 0, 0, 0, 0, 0, 0, 1920, 0, 0]),
+            XWindowStrut::Strut([0, 0, 30, 0]),
+            XWindowStrut::StrutPatial([0, 0, 30, 0, 0, 0, 0, 0, 0, 1920, 0, 0]),
         ])
         .build(&event_loop)
         .unwrap();
-    println!("window id: {:?}", window.id());
     window.set_outer_position(PhysicalPosition::new(0, 0));
     let physical_size = window.inner_size();
     let mut viewport = Viewport::with_physical_size(
@@ -94,7 +94,7 @@ pub fn main() {
     let mut local_pool = futures::executor::LocalPool::new();
 
     // Initialize scene and GUI controls
-    let scene = Scene::new(&mut device);
+    // let scene = Scene::new(&mut device);
     let controls = Controls::new();
 
     // Initialize iced
@@ -190,19 +190,19 @@ pub fn main() {
                     &wgpu::CommandEncoderDescriptor { label: None },
                 );
 
-                let program = state.program();
+                // let program = state.program();
 
-                {
-                    // We clear the frame
-                    let mut render_pass = scene.clear(
-                        &frame.output.view,
-                        &mut encoder,
-                        program.background_color(),
-                    );
+                // {
+                //     // We clear the frame
+                //     let mut render_pass = scene.clear(
+                //         &frame.output.view,
+                //         &mut encoder,
+                //         program.background_color(),
+                //     );
 
-                    // Draw the scene
-                    scene.draw(&mut render_pass);
-                }
+                //     // Draw the scene
+                //     scene.draw(&mut render_pass);
+                // }
 
                 // And then iced on top
                 let mouse_interaction = renderer.backend_mut().draw(
